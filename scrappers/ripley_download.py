@@ -35,6 +35,10 @@ def ejecutar_scraping():
     # options.add_argument('--headless') 
     # options.add_argument('--headless') # Ejecuta sin ventana
     options.add_argument('--disable-gpu') # Recomendado en Windows para evitar errores de renderizado
+    options.add_experimental_option('prefs', {
+        "credentials_enable_service": False,
+        "profile.password_manager_enabled": False,
+    })
     # options.add_argument('--window-size=1920,1080') 
     options.add_argument('--disable-save-password-bubble')
     driver = uc.Chrome(options=options, version_main=147)
@@ -57,8 +61,14 @@ def ejecutar_scraping():
 
         # --- NAVEGACIÓN ---
         # CORRECCIÓN: Para cambiar por índice, se pasa el número directamente, sin By.INDEX
-        wait.until(EC.frame_to_be_available_and_switch_to_it(0))
-        
+        print("Esperando y cambiando al primer iframe...")
+
+        try:
+            wait.until(EC.frame_to_be_available_and_switch_to_it(0))
+        except Exception as e:
+            logging.error(f"Error al cambiar al primer iframe: {str(e)}")
+  
+
         btn_reportes = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'Reportes consolidados')]")))
         btn_reportes.click()
         print("Navegado a Reportes consolidados.")
@@ -81,17 +91,19 @@ def ejecutar_scraping():
         except:
             # Si no está, bajamos un nivel más al iframe hijo
             driver.switch_to.frame(0) 
-
-        for date in ["4-05-2026", "5-05-2026", "6-05-2026","7-05-2026", "8-05-2026", "9-05-2026", "10-05-2026", "11-05-2026", "12-05-2026"]:
+        dates = ['13-05-2026', '14-05-2026', '15-05-2026', '16-05-2026', '17-05-2026']
+        for date in dates:
         # --- ACCIÓN FINAL ---
             date_input = wait.until(EC.visibility_of_element_located((By.ID, "fechaVenta")))
             date_input.clear()
             date_input.send_keys(date)
-            buscar_btn = driver.find_element(By.ID, "Buscar")
+
+            buscar_btn = wait.until(EC.element_to_be_clickable((By.ID, "Buscar")))
             buscar_btn.click()
-            time.sleep(5) # Espera para que el reporte se genere
-            export_btn = driver.find_element(By.ID, "ExportarBuscar")
+
+            export_btn = wait.until(EC.element_to_be_clickable((By.ID, "ExportarBuscar")))
             export_btn.click()
+
             print("Fecha ingresada, iniciando exportación...")
             logging.info("Exportación iniciada con éxito.")
             archivo = esperar_archivo("Consolidado Ventas Stock Diario", str(Path.home() / "Downloads"), timeout=20)
