@@ -26,7 +26,7 @@ class Parser:
         self.parser.add_argument("--col-image-link", default="B", help="Columna donde se insertará el link de la imagen (por defecto: B).")
         self.parser.add_argument("--col-video-link", default="A", help="Columna donde se insertará el link del video (por defecto: A).")
         self.parser.add_argument("--all-sheets", action="store_true", default=False, help="Procesar todas las hojas del archivo de entrada (por defecto: solo la hoja especificada).")
-        self.parser.add_argument("--sheet", default=0, help="Número o nombre de la hoja a procesar (por defecto: 0).")
+        self.parser.add_argument("--sheet-name", help="Nombre de la hoja")
 
     def parse_args(self):
         return self.parser.parse_args()
@@ -42,11 +42,11 @@ class LinkInserter:
         self.database_info = database_info
 
 
-    def _get_dict_from_excel(self, ruta_fotos, hoja=0):
+    def _get_dict_from_excel(self, ruta_fotos, sheet=0):
         """Esta función lee un archivo Excel y devuelve un diccionario con la estructura {codigo: {image_url: url, video_url: url}}.
         En otras palabras, esta función lee una base de datos registrada en un Excel y la convierte en un diccionario que luego se usará
         para insertar los links en el archivo de destino."""
-        df = pd.read_excel(ruta_fotos, sheet_name=hoja, dtype=str)
+        df = pd.read_excel(ruta_fotos, sheet_name=sheet, dtype=str)
 
         # Normalizar columnas
         df.columns = df.columns.str.strip().str.lower()
@@ -69,12 +69,12 @@ class LinkInserter:
     def insertar_links_excel(self,
         archivo_entrada:str,
         archivo_salida:str,
-        also_video_links=False,
+        sheet_name:str=None,
+        also_video=False,
         col_codigo:str="C", # Columna donde se encuentra el código SKU
         col_image_link:str="B", # Columna donde se insertará el link de la imagen
         col_video_link:str="A", # Columna donde se insertará el link del video
         dic_links:dict[str, dict[str, str]]=None,
-        hoja:int=0,
         **kwargs
     ):
         """
@@ -84,7 +84,9 @@ class LinkInserter:
             raise ValueError("Debes pasar un diccionario de links {codigo: {image_url: url}}")
 
         wb = load_workbook(archivo_entrada)
-        ws = wb[wb.sheetnames[hoja]] if isinstance(hoja, int) else wb[hoja]
+        print(wb.sheetnames)
+        input("Presiona Enter para continuar...")  # Pausa para verificar las hojas disponibles
+        ws = wb[wb.sheetnames[0]] if not sheet_name else wb[sheet_name]  # Por defecto, se toma la primera hoja
 
         for row in range(2, ws.max_row + 1):
             valor_celda = ws[f"{col_codigo}{row}"].value
@@ -107,7 +109,7 @@ class LinkInserter:
                 cell.hyperlink = image_url
                 cell.font = Font(color="0000FF", underline="single")
             
-            if video_url is not None and str(video_url).strip() and str(video_url).lower() != "nan" and also_video_links:
+            if video_url is not None and str(video_url).strip() and str(video_url).lower() != "nan" and also_video:
                 cell = ws[f"{col_video_link}{row}"]
                 cell.value = "Ver Video"  # Texto que se verá en la celda
                 cell.hyperlink = video_url
@@ -139,15 +141,16 @@ class LinkInserter:
 
         links = self._get_dict_from_excel(self.database_info["db_path"])
 
+        print(self.database_info)
         self.insertar_links_excel(
-            archivo_entrada=self.database_info["db_path"],
+            archivo_entrada=args.input_file,
             archivo_salida=args.output_file,
-            also_video_links=args.also_video_links,
+            also_video=args.also_video,
             col_codigo=args.col_codigo,
             col_image_link=args.col_image_link,
             col_video_link=args.col_video_link,
             dic_links=links,
-            hoja=args.sheet
+            sheet_name=args.sheet_name
         )
 
 if __name__ == "__main__":
