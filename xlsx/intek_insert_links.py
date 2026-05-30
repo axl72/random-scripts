@@ -9,6 +9,15 @@ class Parser:
     def __init__(self):
         self.parser = argparse.ArgumentParser(description="Inserta links de imágenes y videos en un archivo Excel comparando códigos SKU.")
 
+        self.parser.add_argument("input_file", default="", help="Ruta del archivo Excel que será procesado.")
+        self.parser.add_argument("--output-file", default="output.xlsx", help="Ruta del archivo Excel de salida.")
+        self.parser.add_argument("--also-video", action="store_true", help="Incluir esta opción para insertar también los links de video (por defecto: solo imágenes).")
+        self.parser.add_argument("--col-codigo", default="C", help="Columna donde se encuentra el código SKU (por defecto: C).")
+        self.parser.add_argument("--col-image-link", default="B", help="Columna donde se insertará el link de la imagen (por defecto: B).")
+        self.parser.add_argument("--col-video-link", default="A", help="Columna donde se insertará el link del video (por defecto: A).")
+        self.parser.add_argument("--all-sheets", action="store_true", default=False, help="Procesar todas las hojas del archivo de entrada (por defecto: solo la hoja especificada).")
+        self.parser.add_argument("--sheet-name", help="Nombre de la hoja")
+
         self.command_subparsers = self.parser.add_subparsers(dest="commands", help="Comandos disponibles")
         self.set_parser = self.command_subparsers.add_parser("set", help="Establecer coasas")
         self.resource_subparsers =  self.set_parser.add_subparsers(dest="resources", required=True, help="Establecer la base de datos de links desde un archivo Excel.")
@@ -19,21 +28,13 @@ class Parser:
         self.database_parser.add_argument("--image_col_name", default="IMAGENES LINK", help="Nombre de la columna que contiene los links de imágenes (por defecto: IMAGENES LINK).")
         self.database_parser.add_argument("--video_col_name", default="VIDEO LINK", help="Nombre de la columna que contiene los links de videos (por defecto: VIDEO LINK).")
 
-        self.parser.add_argument("--input-file", default="", help="Ruta del archivo Excel que será procesado.")
-        self.parser.add_argument("--output-file", default="output.xlsx", help="Ruta del archivo Excel de salida.")
-        self.parser.add_argument("--also-video", action="store_true", help="Incluir esta opción para insertar también los links de video (por defecto: solo imágenes).")
-        self.parser.add_argument("--col-codigo", default="C", help="Columna donde se encuentra el código SKU (por defecto: C).")
-        self.parser.add_argument("--col-image-link", default="B", help="Columna donde se insertará el link de la imagen (por defecto: B).")
-        self.parser.add_argument("--col-video-link", default="A", help="Columna donde se insertará el link del video (por defecto: A).")
-        self.parser.add_argument("--all-sheets", action="store_true", default=False, help="Procesar todas las hojas del archivo de entrada (por defecto: solo la hoja especificada).")
-        self.parser.add_argument("--sheet-name", help="Nombre de la hoja")
 
     def parse_args(self):
         return self.parser.parse_args()
     
 class LinkInserter:
     def __init__(self):
-        self.database_info = {"db_path": DB_PATH, id: "SKU", "image": "IMAGENES LINK", "video": "VIDEO LINK"}
+        self.database_info = {"db_path": DB_PATH, "id": "SKU_INTEK", "image": "IMAGENES LINK", "video": "VIDEO LINK"}
 
     def set_databse(self, database_info:dict):
         """Establecer la base de datos implica que debes pasar como argumento la ruta del Excel
@@ -52,11 +53,11 @@ class LinkInserter:
         df.columns = df.columns.str.strip().str.lower()
 
         # Limpiar valores clave
-        df["sku"] = df["sku"].str.strip()
+        df["sku_intek"] = df["sku_intek"].str.strip()
 
         # Crear estructura
         resultado = (
-            df.set_index("sku")[["imagenes link", "video link"]]
+            df.set_index("sku_intek")[["imagenes link", "video link"]]
             .rename(columns={
                 "imagenes link": "image_url",
                 "video link": "video_url"
