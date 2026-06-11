@@ -8,24 +8,28 @@ def parsear_argumentos():
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    # Rutas de archivos
     parser.add_argument(
-        "--sku",
+        "path_liquidacion",
         type=Path,
-        required=True,
-        help="Ruta al archivo de SKUs (ej: Ripley.xlsx)"
+        help="Ruta al archivo de liquidación original (ej: INTEK PERU_01-31.xlsx)"
     )
+
     parser.add_argument(
-        "--ofertas",
+        "path_ofertas",
         type=Path,
-        required=True,
         help="Ruta al archivo de ofertas (ej: INTEK PERU - BAZAR JUGUETES - OFERTAS - MAYO 2026.xlsx)"
     )
+
     parser.add_argument(
-        "--liquidacion",
-        type=Path,
-        required=True,
-        help="Ruta al archivo de liquidación original (ej: INTEK PERU_01-31.xlsx)"
+        "--periodo",
+        type=str,
+        nargs=2,
+
+    )
+
+    parser.add_argument(
+        "--date-format",
+        type=str
     )
     parser.add_argument(
         "--output",
@@ -34,32 +38,11 @@ def parsear_argumentos():
         help="Ruta del archivo de salida (default: output.xlsx)"
     )
 
-    # Fechas
-    parser.add_argument(
-        "--inicio",
-        type=str,
-        required=True,
-        help="Fecha de inicio de oferta en formato YYYY-MM-DD (ej: 2026-05-09)"
-    )
-    parser.add_argument(
-        "--fin",
-        type=str,
-        required=True,
-        help="Fecha de fin de oferta en formato YYYY-MM-DD (ej: 2026-05-31)"
-    )
-
     args = parser.parse_args()
 
-    # Validar formato de fechas
-    try:
-        args.inicio_oferta = datetime.strptime(args.inicio, "%Y-%m-%d").date()
-        args.fin_oferta = datetime.strptime(args.fin, "%Y-%m-%d").date()
-    except ValueError:
-        parser.error("Las fechas deben estar en formato YYYY-MM-DD (ej: 2026-05-09)")
+    if args.periodo:
+        args.periodo = tuple(datetime.strptime(fecha, "%Y-%m-%d").date() for fecha in args.periodo)
 
-    # Eliminar los argumentos de string crudos ya que tenemos los objetos date
-    del args.inicio
-    del args.fin
 
     return args
 
@@ -67,9 +50,8 @@ def parsear_argumentos():
 if __name__ == "__main__":
     args = parsear_argumentos()
     
-    # Ahora puedes usarlos así:
-    print(f"SKU: {args.sku}")
-    print(f"Ofertas: {args.ofertas}")
-    print(f"Liquidación: {args.liquidacion}")
-    print(f"Salida: {args.output}")
-    print(f"Periodo: {args.inicio_oferta} a {args.fin_oferta}")
+    print(f"Ruta liquidación: {args.path_liquidacion} type: {type(args.path_liquidacion)}")
+    print(f"Ruta ofertas: {args.path_ofertas} type: {type(args.path_ofertas)}")
+    print(f"Periodo: {args.periodo} type: {type(args.periodo)}")
+    print(f"Formato fecha: {args.date_format} type: {type(args.date_format)}")
+    print(f"Archivo de salida: {args.output} type: {type(args.output)}")

@@ -37,6 +37,8 @@ def regularizacion_intek(path_liquidacion):
 
     ultima_fila = detalle_sheet.max_row
     for fila in range(7, ultima_fila + 1):
+        if not fila:
+            continue # Acá debería estar la suma de los totales de lo que estoy pidiendo de regularización
         try:
             sku_ripley = str(detalle_sheet.cell(row=fila, column=5).value)  # el SKU está en la columna E (5)
             sku_ripley = sku_ripley.strip() if isinstance(sku_ripley, str) else None  # Limpiar espacios si es string
@@ -45,7 +47,7 @@ def regularizacion_intek(path_liquidacion):
             costo = float(system.sku_intek_df.loc[sku_ripley, "VALOR VENTA"])
   
             string_fecha_venta = str(detalle_sheet.cell(row=fila, column=1).value)  # la fecha de venta está en la columna A (1)
-            fecha_venta = parsear_fecha(string_fecha_venta, format="%Y-%m-%d %H:%M:%S")  # Verificamos que la fecha se pueda parsear correctamente
+            fecha_venta = parsear_fecha(string_fecha_venta, format=system.date_format)  # Verificamos que la fecha se pueda parsear correctamente
 
 
             detalle_sheet.cell(row=fila, column=17).value = costo  # Valor del costo (VALOR VENTA) para Col Q
