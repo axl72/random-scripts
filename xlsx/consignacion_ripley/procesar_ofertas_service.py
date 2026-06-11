@@ -15,8 +15,6 @@ def procesar_ofertas_a_liquidacion(path_ofertas, path_liquidacion, path_salida =
     print(f"📖 Leyendo hoja '{nombre_hoja}' desde: {path_ofertas}")
     df = pd.read_excel(path_ofertas, sheet_name=nombre_hoja)
     print(df.columns)
-    print(df.head())  # Muestra las primeras filas para verificar que se leyó correctamente
-    input()
     df = df[["SKU RIPLEY",
             "DESCRIPCIÓN RIPLEY",
             "PRECIO MASTER",
@@ -27,7 +25,6 @@ def procesar_ofertas_a_liquidacion(path_ofertas, path_liquidacion, path_salida =
             "RECO PROVEEDOR (SIN IGV)",
             "% DSCTO"
             ]]
-    input()
     
     # 2. Cargar el libro de liquidación ORIGINAL en memoria (el archivo en disco no se toca)
     print(f"📂 Cargando archivo original: {path_liquidacion}")
