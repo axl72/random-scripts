@@ -91,7 +91,7 @@ def ejecutar_scraping():
         except:
             # Si no está, bajamos un nivel más al iframe hijo
             driver.switch_to.frame(0) 
-        dates = ['13-05-2026', '14-05-2026', '15-05-2026', '16-05-2026', '17-05-2026']
+        dates = ['19-05-2026', '20-05-2026', '21-05-2026']  # Ejemplo de fechas a ingresar
         for date in dates:
         # --- ACCIÓN FINAL ---
             date_input = wait.until(EC.visibility_of_element_located((By.ID, "fechaVenta")))

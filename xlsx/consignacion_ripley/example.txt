@@ -1,0 +1,1 @@
+python .\consignacion_intek.py "C:\Users\dberrospi\Desktop\INTEK\7. CLIENTES\RIPLEY CONSIGNACION\CONSIGNACION 2026 6 JUNIO\INTEK PERU_01-31.xlsx" "C:\Users\dberrospi\Desktop\INTEK\7. CLIENTES\RIPLEY OFERTAS\INTEK PERU - BAZAR JUGUETES - OFERTAS  - MAYO 2026.xlsx" --periodo 2026-05-09 2026-05-31 --date-format "%Y-%m-%d %H:%M:%S" --output output.xlsx
