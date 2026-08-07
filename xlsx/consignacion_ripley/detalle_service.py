@@ -14,6 +14,7 @@ def detalle_intek(workbook_path: Path,
     
 
     
+    print("Procesando el archivo de detalle...")
     # 1. Diccionario limpio: Mapea directamente el ÍNDICE de columna (int) con el TÍTULO (str)
     # Q=17, R=18, S=19, T=20, U=21, V=22
     nuevas_columnas = {
@@ -29,6 +30,7 @@ def detalle_intek(workbook_path: Path,
     try:
         # 2. Cargar y copiar la hoja
         wb = openpyxl.load_workbook(workbook_path)
+        print("Archivo cargado correctamente.")
         detalle_sheet = wb[sheet_name]
 
         # 3. Calcular e insertar columnas faltantes
@@ -59,7 +61,7 @@ def detalle_intek(workbook_path: Path,
                 sku_ripley = str(detalle_sheet.cell(row=fila, column=5).value)  # el SKU está en la columna E (5)
                 sku_ripley = sku_ripley.strip() if isinstance(sku_ripley, str) else None  # Limpiar espacios si es string
                 string_fecha_venta = str(detalle_sheet.cell(row=fila, column=1).value)  # la fecha de venta está en la columna A (1)
-                fecha_venta = parsear_fecha(string_fecha_venta, format="%Y-%m-%d %H:%M:%S")  # Verificamos que la fecha se pueda parsear correctamente
+                fecha_venta = parsear_fecha(string_fecha_venta, format=system.date_format)  # Verificamos que la fecha se pueda parsear correctamente
                 precio_master = system.sku_intek_df.loc[sku_ripley, "PVP SUGERIDO"]
                 costo = float(system.sku_intek_df.loc[sku_ripley, "VALOR VENTA"]) if sku_ripley in system.sku_intek_df.index else 0
 
@@ -108,8 +110,8 @@ def detalle_intek(workbook_path: Path,
                 data.append(clean_row)
 
         # 7. GUARDAR EL ARCHIVO
-        wb.save(system.output_path)
-        print("✅ Archivo procesado y guardado exitosamente como 'output.xlsx'")
+        wb.save("output.xlsx")
+        print("✅ Detalle de Liquidación procesado y guardado exitosamente como 'output.xlsx'")
 
         # 8. RETORNAR LOS DOS VALORES ESPERADOS (¡Aquí estaba tu error original!)
         return data, columns

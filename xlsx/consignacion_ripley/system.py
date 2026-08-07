@@ -21,15 +21,15 @@ styles = {
 }
 
 path_sku_intek = Path(config["path_sku_intek"])
-path_ofertas_intek = Path(r"C:\Users\dberrospi\Desktop\INTEK\7. CLIENTES\RIPLEY\DATA\Ofertas\INTEK PERU - BAZAR JUGUETES - OFERTAS  - MAYO 2026.xlsx")
+path_ofertas_intek = Path(r"C:\Users\abernabel\Desktop\INTEK\7. CLIENTES\RIPLEY\DATA\Ofertas\INTEK PERU - BAZAR JUGUETES - OFERTAS  - JULIO 2026.xlsx")
 path_ofertas_intek = args.path_ofertas
-liquidacion_path = Path(r"C:\Users\dberrospi\Desktop\INTEK\7. CLIENTES\RIPLEY\CONSIGNACION\CONSIGNACION 2026 6 JUNIO\INTEK PERU_01-31.xlsx")
+liquidacion_path = Path(r"C:\Users\abernabel\Desktop\INTEK\7. CLIENTES\RIPLEY\CONSIGNACION\CONSIGNACION 2026 8 AGOSTO\INTEK PERU_01-31.xlsx")
 liquidacion_path = args.path_liquidacion
 output_path = Path("output.xlsx")
 output_path = args.output
 
-inicio_oferta = "2026-05-09"
-fin_oferta = "2026-05-31"
+inicio_oferta = "2026-07-17"
+fin_oferta = "2026-07-31"
 inicio_oferta_dt = datetime.strptime(inicio_oferta, "%Y-%m-%d")
 fin_oferta_dt = datetime.strptime(fin_oferta, "%Y-%m-%d")
 periodo = (inicio_oferta_dt, fin_oferta_dt)

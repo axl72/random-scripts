@@ -4,7 +4,7 @@ from detalle_service import detalle_intek
 from regularizacion_service import regularizacion_intek
 
 def main():
-    output_path = procesar_ofertas_a_liquidacion(system.path_ofertas_intek, system.liquidacion_path, nombre_hoja="MAYO", nombre_tabla="Tabla")
+    output_path = procesar_ofertas_a_liquidacion(system.path_ofertas_intek, system.liquidacion_path, nombre_hoja="JULIO-26", nombre_tabla="Tabla")
 
     
     output_path = regularizacion_intek(output_path)
