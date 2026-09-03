@@ -53,7 +53,7 @@ def detalle_intek(workbook_path: Path,
         # 5. ESCRIBIR FÓRMULAS/DATOS (DESDE FILA 7 HASTA EL FINAL)
         # ---------------------------------------------------------
         ultima_fila = detalle_sheet.max_row
-        for fila in range(7, ultima_fila + 1):
+        for fila in range(7, ultima_fila):
             try:
                 # AQUÍ ES DONDE PONES TUS FÓRMULAS DE EXCEL.
                 # Ejemplo: Te pongo fórmulas ficticias, TÚ debes cambiarlas por las reales.
@@ -92,7 +92,7 @@ def detalle_intek(workbook_path: Path,
                 detalle_sheet.cell(row=fila, column=20).value = f"=1 - V{fila}/S{fila}" # Columna Asume Proveedor
                 detalle_sheet.cell(row=fila, column=20).number_format = '0%'  # Formato de número con 2 decimales y separador de miles
             except Exception as e:
-                traceback.print_exc()
+                print(f"Error procesando fila {fila}, SKU: {sku_ripley}")
 
 
         # ---------------------------------------------------------

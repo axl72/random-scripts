@@ -6,7 +6,6 @@ import system
 
 def regularizacion_intek(path_liquidacion):
 
-    # sku_intek_df = load_database(path_sku_intek, index="SKU", sheet_name="SKU")  # Carga y muestra el DataFrame para verificar que se lee correctamente
     nuevas_columnas = {
         17: "COSTO (VALOR VENTA)",
         18: "COSTO TOTAL",
@@ -36,7 +35,7 @@ def regularizacion_intek(path_liquidacion):
 
 
     ultima_fila = detalle_sheet.max_row
-    for fila in range(7, ultima_fila + 1):
+    for fila in range(7, ultima_fila):
         if not fila:
             continue # Acá debería estar la suma de los totales de lo que estoy pidiendo de regularización
         try:

@@ -8,7 +8,7 @@ import json
 with open("config.json", "r", encoding="utf-8") as f:
     config = json.load(f)
 
-args = parsear_argumentos()
+# args = parsear_argumentos()
 
 # Estilos
 styles = {
@@ -21,22 +21,22 @@ styles = {
 }
 
 path_sku_intek = Path(config["path_sku_intek"])
-path_ofertas_intek = Path(r"C:\Users\abernabel\Desktop\INTEK\7. CLIENTES\RIPLEY\DATA\Ofertas\INTEK PERU - BAZAR JUGUETES - OFERTAS  - JULIO 2026.xlsx")
-path_ofertas_intek = args.path_ofertas
+path_ofertas_intek = Path(r"C:\Users\abernabel\Desktop\INTEK\7. CLIENTES\RIPLEY OFERTAS\INTEK PERU - BAZAR JUGUETES - OFERTAS  - JULIO 2026.xlsx")
+# path_ofertas_intek = args.path_ofertas
 liquidacion_path = Path(r"C:\Users\abernabel\Desktop\INTEK\7. CLIENTES\RIPLEY\CONSIGNACION\CONSIGNACION 2026 8 AGOSTO\INTEK PERU_01-31.xlsx")
-liquidacion_path = args.path_liquidacion
+# liquidacion_path = args.path_liquidacion
 output_path = Path("output.xlsx")
-output_path = args.output
+# output_path = args.output
 
 inicio_oferta = "2026-07-17"
 fin_oferta = "2026-07-31"
 inicio_oferta_dt = datetime.strptime(inicio_oferta, "%Y-%m-%d")
 fin_oferta_dt = datetime.strptime(fin_oferta, "%Y-%m-%d")
-periodo = (inicio_oferta_dt, fin_oferta_dt)
-periodo = args.periodo
+periodo = (inicio_oferta_dt, fin_oferta_dt) # La variable periodo es una tupla de objetos datetime que representa el rango de fechas de las ofertas
+# periodo = args.periodo
 
 sku_intek_df = load_database(path_sku_intek, index="SKU", sheet_name="SKU")  # Carga y muestra el DataFrame para verificar que se lee correctamente
-print(f"SKU Intek DataFrame cargado con {len(sku_intek_df)} filas.")
+print(f"Masetro de productos Intek cargado con {len(sku_intek_df)} filas desde {path_sku_intek}")
 ofertas_intek_df = load_database(path_ofertas_intek, index="SKU RIPLEY")  # Carga y muestra el DataFrame para verificar que se lee correctamente
 date_format = "%Y-%m-%d %H:%M:%S"
-date_format = args.date_format
+# date_format = args.date_format
