@@ -1,6 +1,13 @@
 from pathlib import Path
 import pandas as pd
 from datetime import date
+from datetime import datetime
+import locale
+
+try:
+    locale.setlocale(locale.LC_ALL, 'es_PE.UTF-8')
+except locale.Error:
+    locale.setlocale(locale.LC_ALL, 'Spanish')
 
 def load_database(path: Path, index: str = None, sheet_name: str =  None) -> pd.DataFrame:
     df = pd.read_excel(path, sheet_name=sheet_name, dtype=str) if sheet_name else pd.read_excel(path, dtype=str)
@@ -8,7 +15,25 @@ def load_database(path: Path, index: str = None, sheet_name: str =  None) -> pd.
     return df
 
 def parsear_fecha(fecha_str: str, format= "%d-%m-%Y") -> date:
-    return date.strptime(fecha_str, format)
+    meses = {
+        "ene": 1,
+        "feb": 2,
+        "mar": 3,
+        "abr": 4,
+        "may": 5,
+        "jun": 6,
+        "jul": 7,
+        "ago": 8,
+        "sep": 9,
+        "oct": 10,
+        "nov": 11,
+        "dic": 12
+    }
+
+    dia, mes, año = fecha_str.split(" - ")
+    fecha = datetime(int(año), meses[mes.lower()], int(dia)).date()
+    
+    return fecha
 
 import wx
 import wx.adv

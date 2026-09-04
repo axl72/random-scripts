@@ -1,12 +1,12 @@
 import system
 import wx
-from procesar_ofertas_service import procesar_ofertas_a_liquidacion
+from procesar_ofertas_service import procesar_ofertas_liquidacion
 from detalle_service import detalle_intek
 from regularizacion_service import regularizacion_intek
 from util import PeriodSelectorPanel
 
 def main(liquidacion_path=None, ofertas_path=None):
-    output_path = procesar_ofertas_a_liquidacion(ofertas_path, liquidacion_path) # Acá podemos agregar el outputname
+    output_path = procesar_ofertas_liquidacion(ofertas_path, liquidacion_path) # Acá podemos agregar el outputname
 
     
     output_path = regularizacion_intek(output_path)

@@ -66,6 +66,8 @@ def regularizacion_intek(path_liquidacion):
             detalle_sheet.cell(row=fila, column=22).value = f"=U{fila}-L{fila}"  # Diferencia entre lo que deben pagar y lo que se les pagará (POR REGULARIZAR)
             detalle_sheet.cell(row=fila, column=22).number_format = system.styles["formato_moneda"]  # Formato de número con 2 decimales y separador de miles
         except Exception as e:
+            traceback.print_exc()
             print(f"Error procesando fila {fila}, SKU: {sku_ripley}")
+            input()
     wb.save("output.xlsx")
     return Path("output.xlsx")
