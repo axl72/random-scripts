@@ -37,6 +37,6 @@ periodo = (inicio_oferta_dt, fin_oferta_dt) # La variable periodo es una tupla d
 
 sku_intek_df = load_database(path_sku_intek, index="SKU", sheet_name="SKU")  # Carga y muestra el DataFrame para verificar que se lee correctamente
 print(f"Masetro de productos Intek cargado con {len(sku_intek_df)} filas desde {path_sku_intek}")
-ofertas_intek_df = load_database(path_ofertas_intek, index="SKU RIPLEY")  # Carga y muestra el DataFrame para verificar que se lee correctamente
+# ofertas_intek_df = load_database(path_ofertas_intek, index="SKU RIPLEY")  # Carga y muestra el DataFrame para verificar que se lee correctamente
 date_format = "%d - %b - %Y"
 # date_format = args.date_format

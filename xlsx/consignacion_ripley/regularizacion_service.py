@@ -2,9 +2,11 @@ from util import parsear_fecha
 import openpyxl
 import traceback
 from pathlib import Path
+from openpyxl import Workbook
 import system
+from pandas import DataFrame
 
-def regularizacion_intek(path_liquidacion):
+def regularizacion_intek(sku_intek_df: DataFrame, wb_ofertas: Workbook) -> Workbook:
 
     nuevas_columnas = {
         17: "COSTO (VALOR VENTA)",
@@ -15,9 +17,8 @@ def regularizacion_intek(path_liquidacion):
         22: "DIFERENCIA"
     }
 
-    wb = openpyxl.load_workbook(path_liquidacion)
-    sheet = wb["DETALLE"]
-    detalle_sheet = wb.copy_worksheet(sheet)
+    sheet = wb_ofertas["DETALLE"]
+    detalle_sheet = wb_ofertas.copy_worksheet(sheet)
     detalle_sheet.title = "REGULARIZACION"
 
     missing_columns = 22 - sheet.max_column # La cantidad de columnas que deben haber en la hoja de Regularización es 22 (hasta la V)
@@ -43,7 +44,7 @@ def regularizacion_intek(path_liquidacion):
             sku_ripley = sku_ripley.strip() if isinstance(sku_ripley, str) else None  # Limpiar espacios si es string
             
             # precio_master = sku_intek_df.loc[sku_ripley, "PVP SUGERIDO"]
-            costo = float(system.sku_intek_df.loc[sku_ripley, "VALOR VENTA"])
+            costo = float(sku_intek_df.loc[sku_ripley, "VALOR VENTA"])
   
             string_fecha_venta = str(detalle_sheet.cell(row=fila, column=1).value)  # la fecha de venta está en la columna A (1)
             fecha_venta = parsear_fecha(string_fecha_venta, format=system.date_format)  # Verificamos que la fecha se pueda parsear correctamente
@@ -69,5 +70,5 @@ def regularizacion_intek(path_liquidacion):
             traceback.print_exc()
             print(f"Error procesando fila {fila}, SKU: {sku_ripley}")
             input()
-    wb.save("output.xlsx")
-    return Path("output.xlsx")
+    wb_ofertas.save("temp-wb-regularizacion.xlsx")
+    return wb_ofertas

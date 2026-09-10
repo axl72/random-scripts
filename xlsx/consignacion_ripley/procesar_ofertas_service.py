@@ -5,7 +5,7 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 import pandas as pd
 from pathlib import Path
 
-def procesar_ofertas_liquidacion(path_ofertas, path_liquidacion, path_salida = "output.xlsx"):
+def procesar_ofertas_liquidacion(wb_liquidacion: openpyxl.Workbook, df_ofertas: pd.DataFrame) -> openpyxl.Workbook:
     """
     Lee una hoja de ofertas, la agrega como hoja nueva al libro de liquidación 
     (sin modificar el original) y guarda el resultado como un archivo nuevo.
@@ -13,30 +13,12 @@ def procesar_ofertas_liquidacion(path_ofertas, path_liquidacion, path_salida = "
     nombre_tabla = "Tabla"
     nombre_hoja = "OFERTAS"
 
-    # 1. Leer los datos de origen rápidamente con pandas
-    print(f"Cargando Ofertas desde: {path_ofertas}")
-    df = pd.read_excel(path_ofertas) # Que sea una lectura general para un archivo de una hoja, no necestimos el nombre
-    df = df[["SKU RIPLEY",
-            "DESCRIPCIÓN RIPLEY",
-            "PRECIO MASTER",
-            "PRECIO PROMO HOT SALES",
-            "FECHA INICIO",
-            "FECHA FIN",
-            "STOCK UND",
-            "RECO PROVEEDOR (SIN IGV)",
-            "% DSCTO"
-            ]]
-    print(f"Hoja de Ofertas cargada con {len(df)} filas")
-    # 2. Cargar el libro de liquidación ORIGINAL en memoria (el archivo en disco no se toca)
-    print(f"Cargando Liquidacion Intek desde {path_liquidacion}")
-    wb = openpyxl.load_workbook(path_liquidacion)
-    print(f"Liquidación Intek cargada correctamente")
     
     # 3. Crear la hoja nueva en este libro cargado en memoria
-    ws = wb.create_sheet(title=nombre_hoja)
-    
+    ws = wb_liquidacion.create_sheet(title=nombre_hoja)
+    tmp_df_ofertas = df_ofertas.reset_index()
     # 4. Insertar los datos del DataFrame en la nueva hoja (conservando encabezados)
-    for row in dataframe_to_rows(df, index=False, header=True):
+    for row in dataframe_to_rows(tmp_df_ofertas, index=False, header=True):
         ws.append(row)
         
     # 5. Convertir el rango de datos en una Tabla oficial de Excel
@@ -59,8 +41,5 @@ def procesar_ofertas_liquidacion(path_ofertas, path_liquidacion, path_salida = "
     tabla.tableStyleInfo = estilo
     ws.add_table(tabla)
     
-    # 6. Guardar la fusión como un archivo TOTALMENTE NUEVO
-    new_path =  path_salida
-    wb.save(new_path)
-    print("Ofertas agregadas correctamente al archivo de liquidación", new_path)
-    return Path(new_path)  # Retornamos la ruta del nuevo archivo generado
+    wb_liquidacion.save("temp-wb-ofertas.xlsx")
+    return wb_liquidacion

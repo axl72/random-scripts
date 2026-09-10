@@ -4,13 +4,11 @@ from pathlib import Path
 import openpyxl
 import pandas as pd
 import traceback
+from openpyxl import Workbook
 
 detalle_sheet_columns_total = 23
 
-def detalle_intek(workbook_path: Path, 
-                            sheet_name: str = "DETALLE", 
-                            start_row: int = 6,
-                            styles: dict = None) -> tuple[list, list]:
+def detalle_intek(sku_intek_df: pd.DataFrame, df_ofertas: pd.DataFrame, wb_regularizacion: Workbook) -> Workbook:
     
 
     
@@ -29,9 +27,8 @@ def detalle_intek(workbook_path: Path,
 
     try:
         # 2. Cargar y copiar la hoja
-        wb = openpyxl.load_workbook(workbook_path)
         print("Archivo cargado correctamente.")
-        detalle_sheet = wb[sheet_name]
+        detalle_sheet = wb_regularizacion["DETALLE"]
 
         # 3. Calcular e insertar columnas faltantes
         missing_columns = detalle_sheet_columns_total - detalle_sheet.max_column # Cuántas columnas faltan para llegar a 23
@@ -62,8 +59,8 @@ def detalle_intek(workbook_path: Path,
                 sku_ripley = sku_ripley.strip() if isinstance(sku_ripley, str) else None  # Limpiar espacios si es string
                 string_fecha_venta = str(detalle_sheet.cell(row=fila, column=1).value)  # la fecha de venta está en la columna A (1)
                 fecha_venta = parsear_fecha(string_fecha_venta, format=system.date_format)  # Verificamos que la fecha se pueda parsear correctamente
-                precio_master = system.sku_intek_df.loc[sku_ripley, "PVP SUGERIDO"]
-                costo = float(system.sku_intek_df.loc[sku_ripley, "VALOR VENTA"]) if sku_ripley in system.sku_intek_df.index else 0
+                precio_master = sku_intek_df.loc[sku_ripley, "PVP SUGERIDO"]
+                costo = float(sku_intek_df.loc[sku_ripley, "VALOR VENTA"]) if sku_ripley in sku_intek_df.index else 0
 
                 detalle_sheet.cell(row=fila, column=17).value = float(precio_master)  # Ejemplo para Col Q
                 detalle_sheet.cell(row=fila, column=17).number_format = system.styles["formato_moneda"]  # Formato de número con 2 decimales y separador de miles
@@ -77,9 +74,10 @@ def detalle_intek(workbook_path: Path,
                 rec_uni = 0
                 descuento_autorizado = 0
                 if fecha_venta >= system.periodo[0] and fecha_venta <= system.periodo[1]:
+                    descuento_autorizado = float(df_ofertas.loc[sku_ripley, "% DSCTO"] if sku_ripley in df_ofertas.index else 0) # Esto debe ser None pero cuando es None arroja una excepcion
+                    rec_uni = df_ofertas.loc[sku_ripley, "RECO PROVEEDOR (SIN IGV)"] if sku_ripley in df_ofertas.index else 0
+             
 
-                    descuento_autorizado = float(system.ofertas_intek_df.loc[sku_ripley, "% DSCTO"] if sku_ripley in system.ofertas_intek_df.index else 0) # Esto debe ser None pero cuando es None arroja una excepcion
-                    rec_uni = system.ofertas_intek_df.loc[sku_ripley, "RECO PROVEEDOR (SIN IGV)"] if sku_ripley in system.ofertas_intek_df.index else 0
 
                     
                 detalle_sheet.cell(row=fila, column=21).value = descuento_autorizado         # Columna DESCTO. AUTORIZADO
@@ -92,7 +90,9 @@ def detalle_intek(workbook_path: Path,
                 detalle_sheet.cell(row=fila, column=20).value = f"=1 - V{fila}/S{fila}" # Columna Asume Proveedor
                 detalle_sheet.cell(row=fila, column=20).number_format = '0%'  # Formato de número con 2 decimales y separador de miles
             except Exception as e:
-                print(f"Error procesando fila {fila}, SKU: {sku_ripley}")
+                # print(f"Error procesando fila {fila}, SKU: {sku_ripley}")
+                traceback.print_exc()
+                input()
 
 
         # ---------------------------------------------------------
@@ -110,7 +110,7 @@ def detalle_intek(workbook_path: Path,
                 data.append(clean_row)
 
         # 7. GUARDAR EL ARCHIVO
-        wb.save("output.xlsx")
+        wb_regularizacion.save("temp-wb-detalle.xlsx")
         print("✅ Detalle de Liquidación procesado y guardado exitosamente como 'output.xlsx'")
 
         # 8. RETORNAR LOS DOS VALORES ESPERADOS (¡Aquí estaba tu error original!)

@@ -3,14 +3,16 @@ import wx
 from procesar_ofertas_service import procesar_ofertas_liquidacion
 from detalle_service import detalle_intek
 from regularizacion_service import regularizacion_intek
-from util import PeriodSelectorPanel
+from util import PeriodSelectorPanel, load_data
+import openpyxl
+import traceback
 
-def main(liquidacion_path=None, ofertas_path=None):
-    output_path = procesar_ofertas_liquidacion(ofertas_path, liquidacion_path) # Acá podemos agregar el outputname
-
-    
-    output_path = regularizacion_intek(output_path)
-    data, columns = detalle_intek(output_path)
+def main(sku_path:str=None, liquidacion_path:str=None, ofertas_path:str=None):
+    df_sku, df_ofertas = load_data(sku_path, ofertas_path)
+    wb_liquidacion = openpyxl.load_workbook(liquidacion_path) 
+    wb_ofertas = procesar_ofertas_liquidacion(wb_liquidacion, df_ofertas) # Acá podemos agregar el outputname
+    wb_regularizacion = regularizacion_intek(df_sku, wb_ofertas)
+    data, columns = detalle_intek(df_sku, df_ofertas, wb_regularizacion)
     
     print(f"\nSe procesaron {len(data)} filas de datos.")
 
@@ -88,16 +90,18 @@ class ViewMain(wx.Frame):
         self.Show()
 
     def on_start(self, event):
+        sku_path = r"C:\Users\abernabel\Desktop\.REPORTES\Ripley.xlsx"
         liquidacion_path = self.input_liquidacion.GetValue()
         liquidacion_ofertas = self.input_ofertas.GetValue()
         periodo = self.period_selector.GetPeriod()
         system.periodo = periodo  # Actualizamos el periodo en el sistema
         self.entry_log.AppendText("Iniciando procesamiento...\n")
         try:
-            main(liquidacion_path=liquidacion_path, ofertas_path=liquidacion_ofertas)
+            main(sku_path=sku_path, liquidacion_path=liquidacion_path, ofertas_path=liquidacion_ofertas)
             self.entry_log.AppendText("Procesamiento completado exitosamente.\n")
         except Exception as e:
             self.entry_log.AppendText(f"Error durante el procesamiento: {e}\n")
+            traceback.print_exc()
     
 
 class App(wx.App):

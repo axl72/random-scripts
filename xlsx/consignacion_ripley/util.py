@@ -14,6 +14,16 @@ def load_database(path: Path, index: str = None, sheet_name: str =  None) -> pd.
     df.set_index(index, inplace=True) if index else None
     return df
 
+def load_data(sku_path: str, ofertas_path: str):
+    print("Parametros pasados: ",sku_path, ofertas_path)
+    df_sku = load_database(Path(sku_path), index="SKU", sheet_name="SKU")  # Carga y muestra el DataFrame para verificar que se lee correctamente
+
+    df_ofertas = pd.read_excel(Path(ofertas_path), dtype=str)  # Carga y muestra el DataFrame para verificar que se lee correctamente
+    df_ofertas = df_ofertas[["SKU RIPLEY", "DESCRIPCIÓN RIPLEY", "PRECIO MASTER", "PRECIO PROMO HOT SALES", "FECHA INICIO", "FECHA FIN", "STOCK UND", "RECO PROVEEDOR (SIN IGV)", "% DSCTO"]]
+    df_ofertas.set_index("SKU RIPLEY", inplace=True)  # Establecer la columna "SKU RIPLEY" como índice
+    
+    return df_sku, df_ofertas
+
 def parsear_fecha(fecha_str: str, format= "%d-%m-%Y") -> date:
     meses = {
         "ene": 1,
