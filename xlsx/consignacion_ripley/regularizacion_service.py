@@ -69,6 +69,5 @@ def regularizacion_intek(sku_intek_df: DataFrame, wb_ofertas: Workbook) -> Workb
         except Exception as e:
             traceback.print_exc()
             print(f"Error procesando fila {fila}, SKU: {sku_ripley}")
-            input()
     wb_ofertas.save("temp-wb-regularizacion.xlsx")
     return wb_ofertas

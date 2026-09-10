@@ -95,9 +95,18 @@ class ViewMain(wx.Frame):
         liquidacion_ofertas = self.input_ofertas.GetValue()
         periodo = self.period_selector.GetPeriod()
         system.periodo = periodo  # Actualizamos el periodo en el sistema
-        self.entry_log.AppendText("Iniciando procesamiento...\n")
         try:
-            main(sku_path=sku_path, liquidacion_path=liquidacion_path, ofertas_path=liquidacion_ofertas)
+            # main(sku_path=sku_path, liquidacion_path=liquidacion_path, ofertas_path=liquidacion_ofertas)
+            df_sku, df_ofertas = load_data(sku_path, liquidacion_ofertas)
+            self.entry_log.AppendText("Ofertas cargadas\n")
+            wb_liquidacion = openpyxl.load_workbook(liquidacion_path) 
+            self.entry_log.AppendText("Liquidación cargada\n")
+            wb_ofertas = procesar_ofertas_liquidacion(wb_liquidacion, df_ofertas) # Acá podemos agregar el outputname
+            self.entry_log.AppendText("Ofertas procesadas y agregadas a la liquidación\n")
+            wb_regularizacion = regularizacion_intek(df_sku, wb_ofertas)
+            self.entry_log.AppendText("Regularización procesada\n")
+            data, columns = detalle_intek(df_sku, df_ofertas, wb_regularizacion)
+            self.entry_log.AppendText(f"Detalle procesado con {len(data)} filas de datos.\n")   
             self.entry_log.AppendText("Procesamiento completado exitosamente.\n")
         except Exception as e:
             self.entry_log.AppendText(f"Error durante el procesamiento: {e}\n")

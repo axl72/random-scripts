@@ -5,8 +5,8 @@ from util import load_database
 from consignacion_parser import parsear_argumentos
 import json
 
-with open("config.json", "r", encoding="utf-8") as f:
-    config = json.load(f)
+# with open("config.json", "r", encoding="utf-8") as f:
+#     config = json.load(f)
 
 # args = parsear_argumentos()
 
@@ -20,7 +20,7 @@ styles = {
     "formato_moneda": '_("S/"* #,##0.00_);_("S/"* -#,##0.00_);_("S/"* "-"??_);_(@_)'
 }
 
-path_sku_intek = Path(config["path_sku_intek"])
+# path_sku_intek = Path(config["path_sku_intek"])
 path_ofertas_intek = Path(r"C:\Users\abernabel\Desktop\INTEK\7. CLIENTES\RIPLEY OFERTAS\INTEK PERU - BAZAR JUGUETES - OFERTAS  - JULIO 2026.xlsx")
 # path_ofertas_intek = args.path_ofertas
 liquidacion_path = Path(r"C:\Users\abernabel\Desktop\INTEK\7. CLIENTES\RIPLEY\CONSIGNACION\CONSIGNACION 2026 8 AGOSTO\INTEK PERU_01-31.xlsx")
@@ -33,10 +33,5 @@ fin_oferta = "2026-07-31"
 inicio_oferta_dt = datetime.strptime(inicio_oferta, "%Y-%m-%d")
 fin_oferta_dt = datetime.strptime(fin_oferta, "%Y-%m-%d")
 periodo = (inicio_oferta_dt, fin_oferta_dt) # La variable periodo es una tupla de objetos datetime que representa el rango de fechas de las ofertas
-# periodo = args.periodo
 
-sku_intek_df = load_database(path_sku_intek, index="SKU", sheet_name="SKU")  # Carga y muestra el DataFrame para verificar que se lee correctamente
-print(f"Masetro de productos Intek cargado con {len(sku_intek_df)} filas desde {path_sku_intek}")
-# ofertas_intek_df = load_database(path_ofertas_intek, index="SKU RIPLEY")  # Carga y muestra el DataFrame para verificar que se lee correctamente
 date_format = "%d - %b - %Y"
-# date_format = args.date_format

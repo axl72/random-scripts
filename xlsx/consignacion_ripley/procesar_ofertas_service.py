@@ -17,6 +17,8 @@ def procesar_ofertas_liquidacion(wb_liquidacion: openpyxl.Workbook, df_ofertas: 
     # 3. Crear la hoja nueva en este libro cargado en memoria
     ws = wb_liquidacion.create_sheet(title=nombre_hoja)
     tmp_df_ofertas = df_ofertas.reset_index()
+    tmp_df_ofertas["SKU RIPLEY"] = tmp_df_ofertas["SKU RIPLEY"].astype(int)  # Asegurarse de que la columna SKU RIPLEY sea de tipo string
+    tmp_df_ofertas["RECO PROVEEDOR (SIN IGV)"] = tmp_df_ofertas["RECO PROVEEDOR (SIN IGV)"].astype(float)  # Asegurarse de que la columna RECO PROVEEDOR (SIN IGV) sea de tipo float
     # 4. Insertar los datos del DataFrame en la nueva hoja (conservando encabezados)
     for row in dataframe_to_rows(tmp_df_ofertas, index=False, header=True):
         ws.append(row)
