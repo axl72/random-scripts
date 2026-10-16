@@ -25,6 +25,7 @@ def load_data(sku_path: str, ofertas_path: str):
     return df_sku, df_ofertas
 
 def parsear_fecha(fecha_str: str, format= "%d-%m-%Y") -> date:
+    print("Fecha a parsear: ", fecha_str)
     meses = {
         "ene": 1,
         "feb": 2,
@@ -37,11 +38,19 @@ def parsear_fecha(fecha_str: str, format= "%d-%m-%Y") -> date:
         "sep": 9,
         "oct": 10,
         "nov": 11,
-        "dic": 12
+        "dic": 12,
+        "Set": 9,  # Para manejar la abreviatura "Set" como septiembre
     }
 
-    dia, mes, año = fecha_str.split(" - ")
-    fecha = datetime(int(año), meses[mes.lower()], int(dia)).date()
+ 
+
+
+    fecha_str = fecha_str.split(" ")[0]  # Tomamos solo la parte de la fecha, ignorando la hora si está presente
+    # año, mes, dia = fecha_str.split("-")
+    # print(año, mes, dia[0])
+    # input("Presiona Enter para continuar...")
+    # fecha = datetime(int(año), int(mes), int(dia[0])).date()
+    fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
     
     return fecha
 
